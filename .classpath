@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/commons-math3-3.5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/algs4"/>
-	<classpathentry kind="lib" path="C:/Users/Richada/Desktop/CS2108/Assignment2/AudioDemo/commons-math3-3.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/zhang_000/Desktop/commons-math3-3.5.jar"/>
 	<classpathentry kind="output" path="out/production/AudioDemo"/>
 </classpath>
