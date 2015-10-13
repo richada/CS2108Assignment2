@@ -137,19 +137,19 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         }else if (e.getSource() == searchButton){
             SearchDemo searchDemo = new SearchDemo();
             if(MSButton.isSelected()){
-            	resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), "data/feature/msFeature.txt");
+            	resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), msFeature);
             }
             
             if(ZCButton.isSelected()){
-				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), "data/feature/zcFeature.txt");       	
+				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), zcFeature);       	
 			}
 			
 			if(ENButton.isSelected()){
-				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), "data/feature/enFeature.txt");
+				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), enFeature);
 			}
 			
 			if(MFCButton.isSelected()){
-				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), "data/feature/mfcFeature.txt");
+				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), mfcFeature);
 			}
 
             for (int i = 0; i < resultFiles.size(); i ++){
