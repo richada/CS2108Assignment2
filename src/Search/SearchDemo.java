@@ -1,6 +1,10 @@
 package Search;
 
 import Feature.MagnitudeSpectrum;
+import Feature.Energy;
+import Feature.MFCC;
+import Feature.ZeroCrossing;
+
 import SignalProcess.WaveIO;
 import Distance.Cosine;
 import Tool.SortHashMapByValue;
@@ -18,7 +22,7 @@ public class SearchDemo {
     /**
      * Please replace the 'trainPath' with the specific path of train set in your PC.
      */
-    protected final static String trainPath = "data/input/train";
+    protected final static String trainPath = "data/input/train/";
 
 
     /***
@@ -27,14 +31,22 @@ public class SearchDemo {
      * Spectrum and MFCC by yourself.
      * @return the map of training features, Key is the name of file, Value is the array/vector of features.
      */
-    public HashMap<String,double[]> trainFeatureList(){
+    public static HashMap<String,double[]> trainFeatureList(){
         File trainFolder = new File(trainPath);
         File[] trainList = trainFolder.listFiles();
 
-        HashMap<String, double[]> featureList = new HashMap<>();
+        HashMap<String, double[]> msFeatureList = new HashMap<>();
+        HashMap<String, double[]> zcFeatureList = new HashMap<>();
+        HashMap<String, double[]> enFeatureList = new HashMap<>();
+        HashMap<String, double[]> mfcFeatureList = new HashMap<>();
+     
+        
         try {
 
-            FileWriter fw = new FileWriter("data/feature/allFeature.txt");
+            FileWriter msfw = new FileWriter("data/feature/msFeature.txt");
+            FileWriter zcfw = new FileWriter("data/feature/zcFeature.txt");
+            FileWriter enfw = new FileWriter("data/feature/enFeature.txt");
+            FileWriter mfcfw = new FileWriter("data/feature/mfcFeature.txt");
 
             for (int i = 0; i < trainList.length; i++) {
                 WaveIO waveIO = new WaveIO();
@@ -44,23 +56,57 @@ public class SearchDemo {
                  * Example of extracting feature via MagnitudeSpectrum, modify it by yourself.
                  */
                 MagnitudeSpectrum ms = new MagnitudeSpectrum();
+                Energy en = new Energy();
+                MFCC mfc = new MFCC();
+                ZeroCrossing zc = new ZeroCrossing();
+                
+                double[][] mfcStep1 = mfc.process(signal);
+                
                 double[] msFeature = ms.getFeature(signal);
+                double[] zcFeature = zc.getFeature(signal);
+                double[] mfcFeature = mfc.getMeanFeature();
+                double[] enFeature = en.getFeature(signal);
 
                 /**
                  * Write the extracted feature into offline file;
                  */
-                featureList.put(trainList[i].getName(), msFeature);
+                msFeatureList.put(trainList[i].getName(), msFeature);
+                zcFeatureList.put(trainList[i].getName(), msFeature);
+                enFeatureList.put(trainList[i].getName(), msFeature);
+                mfcFeatureList.put(trainList[i].getName(), msFeature);
 
-                String line = trainList[i].getName() + "\t";
+                String msLine = trainList[i].getName() + "\t";
+                String zcLine = trainList[i].getName() + "\t";
+                String enLine = trainList[i].getName() + "\t";
+                String mfcLine = trainList[i].getName() + "\t";
+                
                 for (double f: msFeature){
-                    line += f + "\t";
+                    msLine += f + "\t";
                 }
-
-                fw.append(line+"\n");
+                msfw.append(msLine+"\n");
+                
+                for (double f: zcFeature){
+                    zcLine += f + "\t";
+                }
+                zcfw.append(zcLine+"\n");
+                
+                for (double f: enFeature){
+                    enLine += f + "\t";
+                }
+                enfw.append(enLine+"\n");
+                
+                for (double f: mfcFeature){
+                    mfcLine += f + "\t";
+                }
+                mfcfw.append(mfcLine+"\n");
 
                 System.out.println("@=========@" + i);
             }
-            fw.close();
+            msfw.close();
+            zcfw.close();
+            enfw.close();
+            mfcfw.close();
+            
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -72,7 +118,7 @@ public class SearchDemo {
         }
 
 
-        return featureList;
+        return msFeatureList;
     }
 
     /***
@@ -82,12 +128,12 @@ public class SearchDemo {
      * @param query the selected query audio file;
      * @return the top 20 similar audio files;
      */
-    public ArrayList<String> resultList(String query){
+    public ArrayList<String> resultList(String query, String feature){
         WaveIO waveIO = new WaveIO();
 
         short[] inputSignal = waveIO.readWave(query);
         MagnitudeSpectrum ms = new MagnitudeSpectrum();
-        double[] msFeature1 = ms.getFeature(inputSignal);
+        double[] msFeatureQ = ms.getFeature(inputSignal);
         HashMap<String, Double> simList = new HashMap<String, Double>();
 
         /**
@@ -98,11 +144,11 @@ public class SearchDemo {
         /**
          * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
          */
-        HashMap<String, double[]> trainFeatureList = readFeature("data/feature/allFeature.txt");
+        HashMap<String, double[]> trainFeatureList = readFeature(feature);
 
 //        System.out.println(trainFeatureList.size() + "=====");
         for (Map.Entry f: trainFeatureList.entrySet()){
-            simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+            simList.put((String)f.getKey(), cosine.getDistance(msFeatureQ, (double[]) f.getValue()));
         }
 
         SortHashMapByValue sortHM = new SortHashMapByValue(20);
@@ -152,11 +198,12 @@ public class SearchDemo {
     }
 
     public static void main(String[] args){
-        SearchDemo searchDemo = new SearchDemo();
+        //SearchDemo searchDemo = new SearchDemo();
         /**
          * Example of searching, selecting 'bus2.wav' as query;
          */
-        searchDemo.trainFeatureList();
-        searchDemo.resultList("data/input/train/bus2.wav");
+       // searchDemo.resultList("data/input/test/bus2.wav");
+    	
+    	HashMap<String,double[]> feature = trainFeatureList();
     }
 }

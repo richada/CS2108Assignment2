@@ -14,8 +14,14 @@ import javax.swing.filechooser.FileFilter;
 public class SoundEffectDemo extends JFrame implements ActionListener{
 
     JPanel contentPane;
+    JPanel checkBoxPanel = new JPanel(new GridLayout(0,2));
     JButton openButton, searchButton, queryButton;
     JFileChooser fileChooser;
+    JCheckBox MSButton, ZCButton, ENButton, MFCButton;
+    String msFeature = "data/feature/msFeature.txt";
+    String zcFeature = "data/feature/zcFeature.txt";
+    String enFeature = "data/feature/enFeature.txt";
+    String mfcFeature = "data/feature/mfcFeature.txt";
 
     File queryAudio = null;
     int resultSize = 20;
@@ -50,11 +56,32 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
 
         searchButton = new JButton("Search");
         searchButton.addActionListener(this);
+        
+        MSButton = new JCheckBox("Magnitude Spectrum Match");
+        MSButton.addActionListener(this);
+        
+        ZCButton = new JCheckBox("Zero Crossing Match");
+        ZCButton.addActionListener(this);
+        
+        ENButton = new JCheckBox("Energy Match");
+        ENButton.addActionListener(this);
+        
+        MFCButton = new JCheckBox("MFCC Match");
+        MFCButton.addActionListener(this);
 
+        checkBoxPanel.add(MSButton);
+
+        checkBoxPanel.add(ZCButton);
+
+        checkBoxPanel.add(ENButton);
+
+        checkBoxPanel.add(MFCButton);
+        
         JPanel queryPanel = new JPanel();
         queryPanel.add(openButton);
         queryPanel.add(queryButton);
         queryPanel.add(searchButton);
+        
 
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new GridLayout(0, 4, 60, 60));
@@ -79,6 +106,7 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         contentPane.add(queryPanel, BorderLayout.PAGE_START);
+        contentPane.add(checkBoxPanel,BorderLayout.PAGE_END);
         contentPane.add(resultPanel, BorderLayout.CENTER);
 
         contentPane.setVisible(true);
@@ -108,7 +136,21 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
 
         }else if (e.getSource() == searchButton){
             SearchDemo searchDemo = new SearchDemo();
-            resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath());
+            if(MSButton.isSelected()){
+            	resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), "data/feature/msFeature.txt");
+            }
+            
+            if(ZCButton.isSelected()){
+				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), "data/feature/zcFeature.txt");       	
+			}
+			
+			if(ENButton.isSelected()){
+				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), "data/feature/enFeature.txt");
+			}
+			
+			if(MFCButton.isSelected()){
+				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), "data/feature/mfcFeature.txt");
+			}
 
             for (int i = 0; i < resultFiles.size(); i ++){
                 resultLabels[i].setText(resultFiles.get(i));
