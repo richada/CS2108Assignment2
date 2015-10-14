@@ -141,7 +141,7 @@ public class SearchDemo {
         Energy en = new Energy();
         MFCC mfc = new MFCC();
         ZeroCrossing zc = new ZeroCrossing();
-        double msW=1,zcW=1,enW=1,mfcW=1;
+        double msW=0.452,zcW=0.077,enW=0.067,mfcW=0.404;
         String msFeature = "data/feature/msFeature.txt";
         String zcFeature = "data/feature/zcFeature.txt";
         String enFeature = "data/feature/enFeature.txt";
@@ -178,7 +178,10 @@ public class SearchDemo {
         double msV=0,zcV=0,enV=0,mfcV=0;
     	double originV=0,finalV=0;
     	
-//        System.out.println(trainFeatureList.size() + "=====");
+//        CheckBit 1: MS
+//    	  CheckBit 2: ZC
+//    	  CheckBit 3: EN
+//    	  CheckBit 4: MFCC
 
         	if(checkBit.charAt(0) == '1'){
         		for (Map.Entry f: msTrainFeatureList.entrySet()){
@@ -193,7 +196,7 @@ public class SearchDemo {
         	
             if(checkBit.charAt(1) == '1'){
             	for (Map.Entry f: zcTrainFeatureList.entrySet()){
-        			zcV = cosine.getDistance(zcFeatureQ, (double[]) f.getValue());
+        			zcV = ed.getDistance(zcFeatureQ, (double[]) f.getValue());
         			if(simList.containsKey((String)f.getKey())){
         				originV = simList.get((String)f.getKey());
         				simList.put((String)f.getKey(), (originV + zcV * zcW));
@@ -204,7 +207,7 @@ public class SearchDemo {
             
             if(checkBit.charAt(2) == '1'){
             	for (Map.Entry f: enTrainFeatureList.entrySet()){
-        			enV = cosine.getDistance(enFeatureQ, (double[]) f.getValue());
+        			enV = ed.getDistance(enFeatureQ, (double[]) f.getValue());
         			if(simList.containsKey((String)f.getKey())){
         				originV = simList.get((String)f.getKey());
         				simList.put((String)f.getKey(), (originV + enV * enW));
@@ -215,7 +218,7 @@ public class SearchDemo {
             
             if(checkBit.charAt(3) == '1'){
             	for (Map.Entry f: mfcTrainFeatureList.entrySet()){
-        			mfcV = cosine.getDistance(mfcFeatureQ, (double[]) f.getValue());
+        			mfcV = ed.getDistance(mfcFeatureQ, (double[]) f.getValue());
         			if(simList.containsKey((String)f.getKey())){
         				originV = simList.get((String)f.getKey());
         				simList.put((String)f.getKey(), (originV + mfcV * mfcW));

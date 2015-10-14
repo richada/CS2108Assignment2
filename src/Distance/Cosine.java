@@ -32,6 +32,6 @@ public class Cosine {
         }else {
             similarity = 0.0;
         }
-        return -similarity;
+        return 1-similarity;
     }
 }

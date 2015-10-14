@@ -14,10 +14,10 @@ import Distance.Euclidean;
 public class FeatureExtraction {
     public static void main(String[] args){
         WaveIO waveIO1 = new WaveIO();
-        short[] signals1 = waveIO1.readWave("data/input/office1.wav");
+        short[] signals1 = waveIO1.readWave("data/input/train/office1.wav");
 
         WaveIO waveIO2 = new WaveIO();
-        short[] signals2 = waveIO2.readWave("data/input/bus2.wav");
+        short[] signals2 = waveIO2.readWave("data/input/train/bus2.wav");
 
         Energy energy1 = new Energy();
         double[] eFeature1 = energy1.getFeature(signals1);

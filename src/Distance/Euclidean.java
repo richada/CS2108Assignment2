@@ -7,18 +7,31 @@ public class Euclidean {
 
     public double getDistance(double[] query1, double[] query2){
     	double distance;
+    	double difference = 0.0;
+    	double length1 = 0.0;
+    	double length2 = 0.0;
+    	
         
     	if (query1.length != query2.length){
             System.err.println("The dimension of the two vectors does not match!");
 
             System.exit(1);
         }
-    	double[] difference = new double[query1.length];
+    	//double[] difference = new double[query1.length];
     	for (int i = 0; i < query1.length; i ++){
-    		difference[i] = query1[i] - query2[i];
+    		difference += Math.pow((query1[i]-query2[i]), 2);
+    		length1 += Math.pow(query1[i],2);
+    		length2 += Math.pow(query2[i],2);
     	}
-    	
-    	distance = 0.5 * getVariance(difference)/(getVariance(query1)-getVariance(query2));
+    	length1 = Math.sqrt(length1);
+    	length2 = Math.sqrt(length2);
+    	distance = Math.sqrt(difference)/(length1+length2);
+//    	double[] difference = new double[query1.length];
+//    	for (int i = 0; i < query1.length; i ++){
+//    		difference[i] = query1[i] - query2[i];
+//    	}
+//    	
+//    	distance = 0.5 * getVariance(difference)/(getVariance(query1)-getVariance(query2));
     	return distance;
     }
     double getMean(double[] array)
