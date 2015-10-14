@@ -71,9 +71,9 @@ public class SearchDemo {
                  * Write the extracted feature into offline file;
                  */
                 msFeatureList.put(trainList[i].getName(), msFeature);
-                zcFeatureList.put(trainList[i].getName(), msFeature);
-                enFeatureList.put(trainList[i].getName(), msFeature);
-                mfcFeatureList.put(trainList[i].getName(), msFeature);
+                zcFeatureList.put(trainList[i].getName(), zcFeature);
+                enFeatureList.put(trainList[i].getName(), enFeature);
+                mfcFeatureList.put(trainList[i].getName(), mfcFeature);
 
                 String msLine = trainList[i].getName() + "\t";
                 String zcLine = trainList[i].getName() + "\t";
@@ -128,12 +128,32 @@ public class SearchDemo {
      * @param query the selected query audio file;
      * @return the top 20 similar audio files;
      */
-    public ArrayList<String> resultList(String query, String feature){
+    public ArrayList<String> resultList(String query, String checkBit){
         WaveIO waveIO = new WaveIO();
-
         short[] inputSignal = waveIO.readWave(query);
+        double[] msFeatureQ = null,zcFeatureQ=null,enFeatureQ=null,mfcFeatureQ=null;
         MagnitudeSpectrum ms = new MagnitudeSpectrum();
-        double[] msFeatureQ = ms.getFeature(inputSignal);
+        Energy en = new Energy();
+        MFCC mfc = new MFCC();
+        ZeroCrossing zc = new ZeroCrossing();
+        double msW=1,zcW=1,enW=1,mfcW=1;
+        String msFeature = "data/feature/msFeature.txt";
+        String zcFeature = "data/feature/zcFeature.txt";
+        String enFeature = "data/feature/enFeature.txt";
+        String mfcFeature = "data/feature/mfcFeature.txt";
+        System.out.println(checkBit);
+        
+        if(checkBit.charAt(0) == '1')
+        	msFeatureQ = ms.getFeature(inputSignal);
+        if(checkBit.charAt(1) == '1')
+        	zcFeatureQ = zc.getFeature(inputSignal);
+        if(checkBit.charAt(2) == '1')
+        	enFeatureQ = en.getFeature(inputSignal);
+        if(checkBit.charAt(3) == '1'){
+        	double[][] mfcFeatureQ1 = mfc.process(inputSignal);
+        	mfcFeatureQ = mfc.getMeanFeature();
+        }
+        
         HashMap<String, Double> simList = new HashMap<String, Double>();
 
         /**
@@ -144,12 +164,59 @@ public class SearchDemo {
         /**
          * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
          */
-        HashMap<String, double[]> trainFeatureList = readFeature(feature);
-
+        HashMap<String, double[]> msTrainFeatureList = readFeature(msFeature);
+        HashMap<String, double[]> zcTrainFeatureList = readFeature(zcFeature);
+        HashMap<String, double[]> enTrainFeatureList = readFeature(enFeature);
+        HashMap<String, double[]> mfcTrainFeatureList = readFeature(mfcFeature);
+        double msV=0,zcV=0,enV=0,mfcV=0;
+    	double originV=0,finalV=0;
+    	
 //        System.out.println(trainFeatureList.size() + "=====");
-        for (Map.Entry f: trainFeatureList.entrySet()){
-            simList.put((String)f.getKey(), cosine.getDistance(msFeatureQ, (double[]) f.getValue()));
-        }
+
+        	if(checkBit.charAt(0) == '1'){
+        		for (Map.Entry f: msTrainFeatureList.entrySet()){
+        			msV = cosine.getDistance(msFeatureQ, (double[]) f.getValue());
+        			if(simList.containsKey((String)f.getKey())){
+        				originV = simList.get((String)f.getKey());
+        				simList.put((String)f.getKey(), (originV + msV * msW));
+        			}else
+        				simList.put((String)f.getKey(), msV * msW);
+        		}
+        	}
+        	
+            if(checkBit.charAt(1) == '1'){
+            	for (Map.Entry f: zcTrainFeatureList.entrySet()){
+        			zcV = cosine.getDistance(zcFeatureQ, (double[]) f.getValue());
+        			if(simList.containsKey((String)f.getKey())){
+        				originV = simList.get((String)f.getKey());
+        				simList.put((String)f.getKey(), (originV + zcV * zcW));
+        			}else
+        				simList.put((String)f.getKey(), zcV * zcW);
+        		}
+            }
+            
+            if(checkBit.charAt(2) == '1'){
+            	for (Map.Entry f: enTrainFeatureList.entrySet()){
+        			enV = cosine.getDistance(enFeatureQ, (double[]) f.getValue());
+        			if(simList.containsKey((String)f.getKey())){
+        				originV = simList.get((String)f.getKey());
+        				simList.put((String)f.getKey(), (originV + enV * enW));
+        			}else
+        				simList.put((String)f.getKey(), enV * enW);
+        		}
+            }
+            
+            if(checkBit.charAt(3) == '1'){
+            	for (Map.Entry f: mfcTrainFeatureList.entrySet()){
+        			mfcV = cosine.getDistance(mfcFeatureQ, (double[]) f.getValue());
+        			if(simList.containsKey((String)f.getKey())){
+        				originV = simList.get((String)f.getKey());
+        				simList.put((String)f.getKey(), (originV + mfcV * mfcW));
+        			}else
+        				simList.put((String)f.getKey(), mfcV * mfcW);
+        		}
+            }
+        
 
         SortHashMapByValue sortHM = new SortHashMapByValue(20);
         ArrayList<String> result = sortHM.sort(simList);

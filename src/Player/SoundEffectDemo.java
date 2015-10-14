@@ -18,10 +18,7 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
     JButton openButton, searchButton, queryButton;
     JFileChooser fileChooser;
     JCheckBox MSButton, ZCButton, ENButton, MFCButton;
-    String msFeature = "data/feature/msFeature.txt";
-    String zcFeature = "data/feature/zcFeature.txt";
-    String enFeature = "data/feature/enFeature.txt";
-    String mfcFeature = "data/feature/mfcFeature.txt";
+
 
     File queryAudio = null;
     int resultSize = 20;
@@ -135,23 +132,27 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
             fileChooser.setSelectedFile(null);
 
         }else if (e.getSource() == searchButton){
+        	String msC = "0", zcC = "0", enC = "0", mfcC = "0";
+        	String checkBit = "";
             SearchDemo searchDemo = new SearchDemo();
             if(MSButton.isSelected()){
-            	resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), msFeature);
+            	msC = "1";
             }
             
             if(ZCButton.isSelected()){
-				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), zcFeature);       	
+				zcC = "1";       	
 			}
 			
 			if(ENButton.isSelected()){
-				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), enFeature);
+				enC = "1";
 			}
 			
 			if(MFCButton.isSelected()){
-				resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), mfcFeature);
+				mfcC = "1";
 			}
-
+			
+			checkBit = msC+zcC+enC+mfcC;
+			resultFiles = searchDemo.resultList(queryAudio.getAbsolutePath(), checkBit);
             for (int i = 0; i < resultFiles.size(); i ++){
                 resultLabels[i].setText(resultFiles.get(i));
                 resultButton[i].setText(resultFiles.get(i));
