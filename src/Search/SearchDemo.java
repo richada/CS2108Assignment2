@@ -10,6 +10,8 @@ import Evaluation.Recall;
 
 import SignalProcess.WaveIO;
 import Distance.Cosine;
+import Distance.CityBlock;
+import Distance.Euclidean;
 import Tool.SortHashMapByValue;
 
 import java.io.BufferedReader;
@@ -163,6 +165,8 @@ public class SearchDemo {
          * Example of calculating the distance via Cosine Similarity, modify it by yourself please.
          */
         Cosine cosine = new Cosine();
+        CityBlock cb = new CityBlock();
+        Euclidean ed = new Euclidean();
 
         /**
          * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
@@ -237,9 +241,10 @@ public class SearchDemo {
         System.out.println(queryName);
         double recallV = rec.getRecall(queryName, result);
         double precisionV = pre.getPrecision(queryName, result);
+        double F1Score = (2 * precisionV * recallV) /(precisionV + recallV);
        
         System.out.println(out);
-        System.out.println("Recall: "+recallV+"\n"+"Precision: "+precisionV);
+        System.out.println("Recall: "+recallV+"\n"+"Precision: "+precisionV+"\n"+"F1 Score: "+F1Score);
         return result;
     }
 
