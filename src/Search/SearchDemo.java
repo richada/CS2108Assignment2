@@ -5,6 +5,9 @@ import Feature.Energy;
 import Feature.MFCC;
 import Feature.ZeroCrossing;
 
+import Evaluation.Precision;
+import Evaluation.Recall;
+
 import SignalProcess.WaveIO;
 import Distance.Cosine;
 import Tool.SortHashMapByValue;
@@ -141,7 +144,7 @@ public class SearchDemo {
         String zcFeature = "data/feature/zcFeature.txt";
         String enFeature = "data/feature/enFeature.txt";
         String mfcFeature = "data/feature/mfcFeature.txt";
-        System.out.println(checkBit);
+        System.out.println(query);
         
         if(checkBit.charAt(0) == '1')
         	msFeatureQ = ms.getFeature(inputSignal);
@@ -225,8 +228,18 @@ public class SearchDemo {
         for(int j = 0; j < result.size(); j++){
             out += "\t" + result.get(j);
         }
-
+        
+        
+        //Evaluation Part
+        Precision pre = new Precision();
+        Recall rec = new Recall();
+        String queryName = query.substring(query.lastIndexOf("\\")+1);
+        System.out.println(queryName);
+        double recallV = rec.getRecall(queryName, result);
+        double precisionV = pre.getPrecision(queryName, result);
+       
         System.out.println(out);
+        System.out.println("Recall: "+recallV+"\n"+"Precision: "+precisionV);
         return result;
     }
 
