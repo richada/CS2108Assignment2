@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -28,6 +29,7 @@ public class SearchDemo {
      * Please replace the 'trainPath' with the specific path of train set in your PC.
      */
     protected final static String trainPath = "data/input/train/";
+    protected final static String queryPath = "data/input/query/";
 
 
     /***
@@ -38,7 +40,10 @@ public class SearchDemo {
      */
     public static HashMap<String,double[]> trainFeatureList(){
         File trainFolder = new File(trainPath);
+        File queryFolder = new File(queryPath);
+
         File[] trainList = trainFolder.listFiles();
+        File[] queryList = queryFolder.listFiles();
 
         HashMap<String, double[]> msFeatureList = new HashMap<>();
         HashMap<String, double[]> zcFeatureList = new HashMap<>();
@@ -48,14 +53,14 @@ public class SearchDemo {
         
         try {
 
-            FileWriter msfw = new FileWriter("data/feature/msFeature.txt");
-            FileWriter zcfw = new FileWriter("data/feature/zcFeature.txt");
-            FileWriter enfw = new FileWriter("data/feature/enFeature.txt");
-            FileWriter mfcfw = new FileWriter("data/feature/mfcFeature.txt");
+            FileWriter msfw = new FileWriter("data/feature/msQFeature.txt");
+            FileWriter zcfw = new FileWriter("data/feature/zcQFeature.txt");
+            FileWriter enfw = new FileWriter("data/feature/enQFeature.txt");
+            FileWriter mfcfw = new FileWriter("data/feature/mfcQFeature.txt");
 
-            for (int i = 0; i < trainList.length; i++) {
+            for (int i = 0; i < queryList.length; i++) {
                 WaveIO waveIO = new WaveIO();
-                short[] signal = waveIO.readWave(trainList[i].getAbsolutePath());
+                short[] signal = waveIO.readWave(queryList[i].getAbsolutePath());
 
                 /**
                  * Example of extracting feature via MagnitudeSpectrum, modify it by yourself.
@@ -75,15 +80,15 @@ public class SearchDemo {
                 /**
                  * Write the extracted feature into offline file;
                  */
-                msFeatureList.put(trainList[i].getName(), msFeature);
-                zcFeatureList.put(trainList[i].getName(), zcFeature);
-                enFeatureList.put(trainList[i].getName(), enFeature);
-                mfcFeatureList.put(trainList[i].getName(), mfcFeature);
+                msFeatureList.put(queryList[i].getName(), msFeature);
+                zcFeatureList.put(queryList[i].getName(), zcFeature);
+                enFeatureList.put(queryList[i].getName(), enFeature);
+                mfcFeatureList.put(queryList[i].getName(), mfcFeature);
 
-                String msLine = trainList[i].getName() + "\t";
-                String zcLine = trainList[i].getName() + "\t";
-                String enLine = trainList[i].getName() + "\t";
-                String mfcLine = trainList[i].getName() + "\t";
+                String msLine = queryList[i].getName() + "\t";
+                String zcLine = queryList[i].getName() + "\t";
+                String enLine = queryList[i].getName() + "\t";
+                String mfcLine = queryList[i].getName() + "\t";
                 
                 for (double f: msFeature){
                     msLine += f + "\t";
@@ -256,7 +261,7 @@ public class SearchDemo {
      * @param featurePath the path of offline file including the features of training set.
      * @return the map of training features, Key is the name of file, Value is the array/vector of features.
      */
-    private HashMap<String, double[]> readFeature(String featurePath){
+    private static HashMap<String, double[]> readFeature(String featurePath){
         HashMap<String, double[]> fList = new HashMap<>();
         try{
             FileReader fr = new FileReader(featurePath);
@@ -285,13 +290,129 @@ public class SearchDemo {
         return fList;
     }
 
-    public static void main(String[] args){
+    public static void testRun() throws IOException{
+    	String msFeature = "data/feature/msFeature.txt";
+        String zcFeature = "data/feature/zcFeature.txt";
+        String enFeature = "data/feature/enFeature.txt";
+        String mfcFeature = "data/feature/mfcFeature.txt";
+        
+        String msQFeature = "data/feature/msQFeature.txt";
+        String zcQFeature = "data/feature/zcQFeature.txt";
+        String enQFeature = "data/feature/enQFeature.txt";
+        String mfcQFeature = "data/feature/mfcQFeature.txt";
+    	
+    	HashMap<String, double[]> msTrainFeatureList = readFeature(msFeature);
+        HashMap<String, double[]> zcTrainFeatureList = readFeature(zcFeature);
+        HashMap<String, double[]> enTrainFeatureList = readFeature(enFeature);
+        HashMap<String, double[]> mfcTrainFeatureList = readFeature(mfcFeature);
+        
+        HashMap<String, double[]> msQueryFeatureList = readFeature(msQFeature);
+        HashMap<String, double[]> zcQueryFeatureList = readFeature(zcQFeature);
+        HashMap<String, double[]> enQueryFeatureList = readFeature(enQFeature);
+        HashMap<String, double[]> mfcQueryFeatureList = readFeature(mfcQFeature);
+        
+        HashMap<String, Double> msList = new HashMap<String, Double>();
+        HashMap<String, Double> zcList = new HashMap<String, Double>();
+        HashMap<String, Double> enList = new HashMap<String, Double>();
+        HashMap<String, Double> mfcList = new HashMap<String, Double>();
+        
+        FileWriter msfw = new FileWriter("data/output/msResult.txt");
+        FileWriter zcfw = new FileWriter("data/output/zcResult.txt");
+        FileWriter enfw = new FileWriter("data/output/enResult.txt");
+        FileWriter mfcfw = new FileWriter("data/output/mfcResult.txt");
+    
+        Cosine cosine = new Cosine();
+        CityBlock cb = new CityBlock();
+        Euclidean ed = new Euclidean();
+        
+        Precision pre = new Precision();
+        
+        double msV=0,zcV=0,enV=0,mfcV=0;
+        
+        for (Map.Entry f1: msQueryFeatureList.entrySet()){
+        	for (Map.Entry f2: msTrainFeatureList.entrySet()){
+    			msV = cosine.getDistance((double[]) f1.getValue(), (double[]) f2.getValue());
+    			msList.put((String)f2.getKey(), msV);
+        	}
+        	SortHashMapByValue sortHM = new SortHashMapByValue(20);
+            ArrayList<String> msResult = sortHM.sort(msList);
+            
+            double precisionV = pre.getPrecision((String)f1.getKey(), msResult);
+            String msLine = (String)f1.getKey() + ":\t Precision: " + String.valueOf(precisionV) + "\n";
+            
+//            for(int i=0; i<msResult.size(); i++){
+//            	msLine += msResult.get(i) + "\t";
+//            }
+            msfw.append(msLine + "\n");
+            msList.clear();
+        }
+        
+        for (Map.Entry f1: zcQueryFeatureList.entrySet()){
+        	for (Map.Entry f2: zcTrainFeatureList.entrySet()){
+    			zcV = ed.getDistance((double[]) f1.getValue(), (double[]) f2.getValue());
+    			zcList.put((String)f2.getKey(), zcV);
+        	}
+        	SortHashMapByValue sortHM = new SortHashMapByValue(20);
+            ArrayList<String> zcResult = sortHM.sort(zcList);
+            double precisionV = pre.getPrecision((String)f1.getKey(), zcResult);
+            String zcLine = (String)f1.getKey() + ":\t Precision: " + String.valueOf(precisionV) + "\n";
+            
+//            for(int i=0; i<zcResult.size(); i++){
+//            	zcLine += zcResult.get(i) + "\t";
+//            }
+            zcfw.append(zcLine + "\n");
+            zcList.clear();
+        }
+        
+        for (Map.Entry f1: enQueryFeatureList.entrySet()){
+        	for (Map.Entry f2: enTrainFeatureList.entrySet()){
+    			enV = ed.getDistance((double[]) f1.getValue(), (double[]) f2.getValue());
+    			enList.put((String)f2.getKey(), enV);
+        	}
+        	SortHashMapByValue sortHM = new SortHashMapByValue(20);
+            ArrayList<String> enResult = sortHM.sort(enList);
+            double precisionV = pre.getPrecision((String)f1.getKey(), enResult);
+            String enLine = (String)f1.getKey() + ":\t Precision: " + String.valueOf(precisionV) + "\n";
+            
+//            for(int i=0; i<enResult.size(); i++){
+//            	enLine += enResult.get(i) + "\t";
+//            }
+            enfw.append(enLine + "\n");
+            enList.clear();
+        }
+        
+        for (Map.Entry f1: mfcQueryFeatureList.entrySet()){
+        	for (Map.Entry f2: mfcTrainFeatureList.entrySet()){
+    			mfcV = ed.getDistance((double[]) f1.getValue(), (double[]) f2.getValue());
+    			mfcList.put((String)f2.getKey(), mfcV);
+        	}
+        	SortHashMapByValue sortHM = new SortHashMapByValue(20);
+            ArrayList<String> mfcResult = sortHM.sort(mfcList);
+            double precisionV = pre.getPrecision((String)f1.getKey(), mfcResult);
+            String mfcLine = (String)f1.getKey() + ":\t Precision: " + String.valueOf(precisionV) + "\n";
+            
+//            for(int i=0; i<mfcResult.size(); i++){
+//            	mfcLine += mfcResult.get(i) + "\t";
+//            }
+            mfcfw.append(mfcLine + "\n");
+            mfcList.clear();
+        }
+        
+        msfw.close();
+        zcfw.close();
+        enfw.close();
+        mfcfw.close();
+
+    }
+    
+    public static void main(String[] args) throws IOException{
         //SearchDemo searchDemo = new SearchDemo();
         /**
          * Example of searching, selecting 'bus2.wav' as query;
          */
        // searchDemo.resultList("data/input/test/bus2.wav");
     	
-    	HashMap<String,double[]> feature = trainFeatureList();
+    	//HashMap<String,double[]> feature = trainFeatureList();
+    	testRun();
     }
 }
