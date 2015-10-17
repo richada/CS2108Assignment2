@@ -16,10 +16,12 @@ import Tool.SortHashMapByValue;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by workshop on 9/18/2015.
@@ -152,6 +154,86 @@ public class SearchDemo {
         String enFeature = "data/feature/enFeature.txt";
         String mfcFeature = "data/feature/mfcFeature.txt";
         System.out.println(query);
+        
+        String queryCategory = query.substring(query.lastIndexOf("/")+1).split(".")[0].replaceAll("[^a-zA-Z]","");
+        
+        switch(queryCategory){
+        case "bus":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "busystreet":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "office":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "openairmarket":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "park":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "quietstreet":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "restaurant":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "supermarket":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "tube":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        case "tubestation":
+        	msW = 1;
+        	zcW = 1;
+        	enW = 1;
+        	mfcW = 1;
+        	break;
+        	
+        default:
+        	System.out.println("No Such Case!\n");
+        	break;
+        }
+        	
+        	
         
         if(checkBit.charAt(0) == '1')
         	msFeatureQ = ms.getFeature(inputSignal);
@@ -300,6 +382,16 @@ public class SearchDemo {
         String zcQFeature = "data/feature/zcQFeature.txt";
         String enQFeature = "data/feature/enQFeature.txt";
         String mfcQFeature = "data/feature/mfcQFeature.txt";
+        
+        String msResultP = "data/output/msResult.txt";
+        String zcResultP = "data/output/zcResult.txt";
+        String enResultP = "data/output/enResult.txt";
+        String mfcResultP = "data/output/mfcResult.txt";
+        
+        String msSResultP = "data/output/msSResult.txt";
+        String zcSResultP = "data/output/zcSResult.txt";
+        String enSResultP = "data/output/enSResult.txt";
+        String mfcSResultP = "data/output/mfcSResult.txt";
     	
     	HashMap<String, double[]> msTrainFeatureList = readFeature(msFeature);
         HashMap<String, double[]> zcTrainFeatureList = readFeature(zcFeature);
@@ -316,10 +408,15 @@ public class SearchDemo {
         HashMap<String, Double> enList = new HashMap<String, Double>();
         HashMap<String, Double> mfcList = new HashMap<String, Double>();
         
-        FileWriter msfw = new FileWriter("data/output/msResult.txt");
-        FileWriter zcfw = new FileWriter("data/output/zcResult.txt");
-        FileWriter enfw = new FileWriter("data/output/enResult.txt");
-        FileWriter mfcfw = new FileWriter("data/output/mfcResult.txt");
+        FileWriter msfw = new FileWriter(msResultP);
+        FileWriter zcfw = new FileWriter(zcResultP);
+        FileWriter enfw = new FileWriter(enResultP);
+        FileWriter mfcfw = new FileWriter(mfcResultP);
+        
+        FileWriter mssfw = new FileWriter(msSResultP);
+        FileWriter zcsfw = new FileWriter(zcSResultP);
+        FileWriter ensfw = new FileWriter(enSResultP);
+        FileWriter mfcsfw = new FileWriter(mfcSResultP);
     
         Cosine cosine = new Cosine();
         CityBlock cb = new CityBlock();
@@ -338,12 +435,15 @@ public class SearchDemo {
             ArrayList<String> msResult = sortHM.sort(msList);
             
             double precisionV = pre.getPrecision((String)f1.getKey(), msResult);
-            String msLine = (String)f1.getKey() + ":\t Precision: " + String.valueOf(precisionV) + "\n";
+            
+            HashMap<String, Double> sortedResult = new HashMap<String, Double>();
+            
+            String msLine = (String)f1.getKey() + " Precision:" + String.valueOf(precisionV) + "\n";
             
 //            for(int i=0; i<msResult.size(); i++){
 //            	msLine += msResult.get(i) + "\t";
 //            }
-            msfw.append(msLine + "\n");
+            msfw.append(msLine);
             msList.clear();
         }
         
@@ -355,12 +455,12 @@ public class SearchDemo {
         	SortHashMapByValue sortHM = new SortHashMapByValue(20);
             ArrayList<String> zcResult = sortHM.sort(zcList);
             double precisionV = pre.getPrecision((String)f1.getKey(), zcResult);
-            String zcLine = (String)f1.getKey() + ":\t Precision: " + String.valueOf(precisionV) + "\n";
+            String zcLine = (String)f1.getKey() + " Precision:" + String.valueOf(precisionV) + "\n";
             
 //            for(int i=0; i<zcResult.size(); i++){
 //            	zcLine += zcResult.get(i) + "\t";
 //            }
-            zcfw.append(zcLine + "\n");
+            zcfw.append(zcLine);
             zcList.clear();
         }
         
@@ -372,12 +472,12 @@ public class SearchDemo {
         	SortHashMapByValue sortHM = new SortHashMapByValue(20);
             ArrayList<String> enResult = sortHM.sort(enList);
             double precisionV = pre.getPrecision((String)f1.getKey(), enResult);
-            String enLine = (String)f1.getKey() + ":\t Precision: " + String.valueOf(precisionV) + "\n";
+            String enLine = (String)f1.getKey() + " Precision:" + String.valueOf(precisionV) + "\n";
             
 //            for(int i=0; i<enResult.size(); i++){
 //            	enLine += enResult.get(i) + "\t";
 //            }
-            enfw.append(enLine + "\n");
+            enfw.append(enLine);
             enList.clear();
         }
         
@@ -389,12 +489,12 @@ public class SearchDemo {
         	SortHashMapByValue sortHM = new SortHashMapByValue(20);
             ArrayList<String> mfcResult = sortHM.sort(mfcList);
             double precisionV = pre.getPrecision((String)f1.getKey(), mfcResult);
-            String mfcLine = (String)f1.getKey() + ":\t Precision: " + String.valueOf(precisionV) + "\n";
+            String mfcLine = (String)f1.getKey() + " Precision:" + String.valueOf(precisionV) + "\n";
             
 //            for(int i=0; i<mfcResult.size(); i++){
 //            	mfcLine += mfcResult.get(i) + "\t";
 //            }
-            mfcfw.append(mfcLine + "\n");
+            mfcfw.append(mfcLine);
             mfcList.clear();
         }
         
@@ -402,7 +502,348 @@ public class SearchDemo {
         zcfw.close();
         enfw.close();
         mfcfw.close();
+        
+        FileReader msfr = new FileReader(msResultP);
+        FileReader zcfr = new FileReader(zcResultP);
+        FileReader enfr = new FileReader(enResultP);
+        FileReader mfcfr = new FileReader(mfcResultP);
+        
+        BufferedReader msbr = new BufferedReader(msfr);
+        BufferedReader zcbr = new BufferedReader(zcfr);
+        BufferedReader enbr = new BufferedReader(enfr);
+        BufferedReader mfcbr = new BufferedReader(mfcfr);
+        
+        HashMap<String, String> msSResult = new HashMap<String,String>();
+        HashMap<String, String> zcSResult = new HashMap<String,String>();
+        HashMap<String, String> enSResult = new HashMap<String,String>();
+        HashMap<String, String> mfcSResult = new HashMap<String,String>();
+        
+        for(int i=0; i<100; i++){
+        	String msL = msbr.readLine();
+        	String zcL = zcbr.readLine();
+        	String enL = enbr.readLine();
+        	String mfcL = mfcbr.readLine();
+        	
+        	msSResult.put(msL.split(" ")[0], msL.split(" ")[1]);
+        	zcSResult.put(zcL.split(" ")[0], zcL.split(" ")[1]);
+        	enSResult.put(enL.split(" ")[0], enL.split(" ")[1]);
+        	mfcSResult.put(mfcL.split(" ")[0], mfcL.split(" ")[1]);
+        }
+        
+        TreeMap<String, String>msFResult = new TreeMap<String,String>(msSResult);
+        TreeMap<String, String>zcFResult = new TreeMap<String,String>(zcSResult);
+        TreeMap<String, String>enFResult = new TreeMap<String,String>(enSResult);
+        TreeMap<String, String>mfcFResult = new TreeMap<String,String>(mfcSResult);
+        
+        int counter = 1;
+        ArrayList<Double> average = new ArrayList<Double>();
+        
+        for(Map.Entry m: msFResult.entrySet()){
+        	String output = m.getKey() + " " + m.getValue() + "\n";
+        	average.add(Double.parseDouble(((String) m.getValue()).split(":")[1]));
+        	if(counter % 10 == 0){
+        		double sum = 0;
+        		for(int i=0; i<10; i++){
+        			sum += average.get(i);
+        		}
+        		double averageP = sum / 10.0;
+        		output += "Average: " + String.valueOf(averageP) + "\n\n";
+        		average.clear();
+        	}
+        	counter++;
+        	mssfw.append(output);
+        }
+        
+        counter = 1;
+        for(Map.Entry m: zcFResult.entrySet()){
+        	String output = m.getKey() + " " + m.getValue() + "\n";
+        	average.add(Double.parseDouble(((String) m.getValue()).split(":")[1]));
+        	if(counter % 10 == 0){
+        		double sum = 0;
+        		for(int i=0; i<10; i++){
+        			sum += average.get(i);
+        		}
+        		double averageP = sum / 10.0;
+        		output += "Average: " + String.valueOf(averageP) + "\n\n";
+        		average.clear();
+        	}
+        	counter++;
+        	zcsfw.append(output);
+        }
+        
+        counter = 1;
+        for(Map.Entry m: enFResult.entrySet()){
+        	String output = m.getKey() + " " + m.getValue() + "\n";
+        	average.add(Double.parseDouble(((String) m.getValue()).split(":")[1]));
+        	if(counter % 10 == 0){
+        		double sum = 0;
+        		for(int i=0; i<10; i++){
+        			sum += average.get(i);
+        		}
+        		double averageP = sum / 10.0;
+        		output += "Average: " + String.valueOf(averageP) + "\n\n";
+        		average.clear();
+        	}
+        	counter++;
+        	ensfw.append(output);
+        }
+        
+        counter = 1;
+        for(Map.Entry m: mfcFResult.entrySet()){
+        	String output = m.getKey() + " " + m.getValue() + "\n";
+        	average.add(Double.parseDouble(((String) m.getValue()).split(":")[1]));
+        	if(counter % 10 == 0){
+        		double sum = 0;
+        		for(int i=0; i<10; i++){
+        			sum += average.get(i);
+        		}
+        		double averageP = sum / 10.0;
+        		output += "Average: " + String.valueOf(averageP) + "\n\n";
+        		average.clear();
+        	}
+        	counter++;
+        	mfcsfw.append(output);
+        }
+        
+        msbr.close();
+        mssfw.close();
+        msfr.close();
+        
+        zcbr.close();
+        zcsfw.close();
+        zcfr.close();
+        
+        enbr.close();
+        ensfw.close();
+        enfr.close();
+        
+        mfcbr.close();
+        mfcsfw.close();
+        mfcfr.close();
+    }
 
+    public static void testWeight() throws IOException{
+    	String msFeature = "data/feature/msFeature.txt";
+        String zcFeature = "data/feature/zcFeature.txt";
+        String enFeature = "data/feature/enFeature.txt";
+        String mfcFeature = "data/feature/mfcFeature.txt";
+        
+        String msQFeature = "data/feature/msQFeature.txt";
+        String zcQFeature = "data/feature/zcQFeature.txt";
+        String enQFeature = "data/feature/enQFeature.txt";
+        String mfcQFeature = "data/feature/mfcQFeature.txt";
+        
+        String weightResultP = "data/output/weightResult.txt";
+    	
+    	HashMap<String, double[]> msTrainFeatureList = readFeature(msFeature);
+        HashMap<String, double[]> zcTrainFeatureList = readFeature(zcFeature);
+        HashMap<String, double[]> enTrainFeatureList = readFeature(enFeature);
+        HashMap<String, double[]> mfcTrainFeatureList = readFeature(mfcFeature);
+        
+        HashMap<String, double[]> msQueryFeatureList = readFeature(msQFeature);
+        HashMap<String, double[]> zcQueryFeatureList = readFeature(zcQFeature);
+        HashMap<String, double[]> enQueryFeatureList = readFeature(enQFeature);
+        HashMap<String, double[]> mfcQueryFeatureList = readFeature(mfcQFeature);
+        
+        HashMap<String, Double> outputList = new HashMap<String, Double>();
+        
+        FileWriter fw = new FileWriter(weightResultP);
+    
+        Cosine cosine = new Cosine();
+        Euclidean ed = new Euclidean();
+        
+        Precision pre = new Precision();
+        
+        double msV=0,zcV=0,enV=0,mfcV=0;
+        
+        ArrayList<String> queryName = new ArrayList<String>();
+        for (Map.Entry f1: msQueryFeatureList.entrySet()){
+        	queryName.add((String)f1.getKey());
+        }
+        Collections.sort(queryName);
+        
+        for (int k=0; k<100; k++){
+        	String query = queryName.get(k);
+        	String queryCategory = query.split(".")[0].replaceAll("[^a-zA-Z]","");
+        	double msL=0,msH=0,zcL=0,zcH=0,enL=0,enH=0,mfcL=0,mfcH=0;
+      
+        	switch(queryCategory){
+            case "bus":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "busystreet":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "office":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "openairmarket":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "park":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "quietstreet":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "restaurant":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "supermarket":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "tube":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            case "tubestation":
+            	msL=0;
+            	msH=0;
+            	zcL=0;
+            	zcH=0;
+            	enL=0;
+            	enH=0;
+            	mfcL=0;
+            	mfcH=0;
+            	break;
+            	
+            default:
+            	System.out.println("No Such Case!\n");
+            	break;
+            }
+        	
+        	for(double msW = msL; msW < msH; msW += 0.01){
+        		for(double zcW = zcL; zcW < zcH; zcW += 0.01){
+        			for(double enW = enL; enW < enH; enW += 0.01){
+        				for(double mfcW = mfcL; mfcW < mfcH; mfcW += 0.01){
+        					double originV = 0;		
+				        	for (Map.Entry f2: msTrainFeatureList.entrySet()){		
+				    			msV = cosine.getDistance(msQueryFeatureList.get(query), (double[]) f2.getValue());
+				    			if(outputList.containsKey((String)f2.getKey())){
+			        				originV = outputList.get((String)f2.getKey());
+			        				outputList.put((String)f2.getKey(), (originV + msV * msW));
+			        			}else
+			        				outputList.put((String)f2.getKey(), msV * msW);
+				        	}
+				        	for (Map.Entry f2: zcTrainFeatureList.entrySet()){
+				    			zcV = ed.getDistance(zcQueryFeatureList.get(query), (double[]) f2.getValue());
+				    			if(outputList.containsKey((String)f2.getKey())){
+			        				originV = outputList.get((String)f2.getKey());
+			        				outputList.put((String)f2.getKey(), (originV + zcV * zcW));
+			        			}else
+			        				outputList.put((String)f2.getKey(), zcV * zcW);
+				        	}
+				        	for (Map.Entry f2: enTrainFeatureList.entrySet()){
+				    			enV = ed.getDistance(enQueryFeatureList.get(query), (double[]) f2.getValue());
+				    			if(outputList.containsKey((String)f2.getKey())){
+			        				originV = outputList.get((String)f2.getKey());
+			        				outputList.put((String)f2.getKey(), (originV + enV * enW));
+			        			}else
+			        				outputList.put((String)f2.getKey(), enV * enW);
+				        	}
+				        	for (Map.Entry f2: mfcTrainFeatureList.entrySet()){
+				    			mfcV = ed.getDistance(mfcQueryFeatureList.get(query), (double[]) f2.getValue());
+				    			if(outputList.containsKey((String)f2.getKey())){
+			        				originV = outputList.get((String)f2.getKey());
+			        				outputList.put((String)f2.getKey(), (originV + mfcV * mfcW));
+			        			}else
+			        				outputList.put((String)f2.getKey(), mfcV * mfcW);
+				        	}
+				        	
+				        	
+				        	SortHashMapByValue sortHM = new SortHashMapByValue(20);
+				            ArrayList<String> msResult = sortHM.sort(outputList);
+				            
+				            double precisionV = pre.getPrecision(query, msResult);
+				            
+				            HashMap<String, Double> sortedResult = new HashMap<String, Double>();
+				            
+				            String resultLine = query + "\n\tmsW:" + String.valueOf(msW) + 
+				            		"\tzcW:" + String.valueOf(zcW) + "\tenW:" + String.valueOf(enV) + "\tmfcW:" + String.valueOf(mfcV) +
+				            		"\n\t Precision:" + String.valueOf(precisionV) + "\n";
+				            
+				//            for(int i=0; i<msResult.size(); i++){
+				//            	msLine += msResult.get(i) + "\t";
+				//            }
+				            outputList.clear();   
+				            fw.append(resultLine);
+				        }
+        			}
+        		}
+        	}
+        }
+        fw.close();
     }
     
     public static void main(String[] args) throws IOException{
@@ -413,6 +854,6 @@ public class SearchDemo {
        // searchDemo.resultList("data/input/test/bus2.wav");
     	
     	//HashMap<String,double[]> feature = trainFeatureList();
-    	testRun();
+    	//testRun();
     }
 }
