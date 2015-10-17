@@ -664,118 +664,100 @@ public class SearchDemo {
         
         for (int k=0; k<100; k++){
         	String query = queryName.get(k);
-        	String queryCategory = query.split(".")[0].replaceAll("[^a-zA-Z]","");
-        	double msL=0,msH=0,zcL=0,zcH=0,enL=0,enH=0,mfcL=0,mfcH=0;
+        	System.out.println(query.split(".wav")[0]);
+        	String queryCategory = query.split(".wav")[0].replaceAll("[^a-zA-Z]","");
+        	System.out.println(queryCategory);
+        	double msL=0,msH=0,zcL=0,zcH=0,enL=0,enH=0;
       
         	switch(queryCategory){
             case "bus":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.4;
+            	msH=0.5;
+            	zcL=0.05;
+            	zcH=0.1;
+            	enL=0.01;
+            	enH=0.01;
             	break;
             	
             case "busystreet":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.3;
+            	msH=0.35;
+            	zcL=0.01;
+            	zcH=0.05;
+            	enL=0.3;
+            	enH=0.35;
             	break;
             	
             case "office":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.3;
+            	msH=0.4;
+            	zcL=0.05;
+            	zcH=0.15;
+            	enL=0.05;
+            	enH=0.15;
             	break;
             	
             case "openairmarket":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.4;
+            	msH=0.5;
+            	zcL=0.05;
+            	zcH=0.1;
+            	enL=0.01;
+            	enH=0.05;
             	break;
             	
             case "park":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.4;
+            	msH=0.45;
+            	zcL=0.05;
+            	zcH=0.1;
+            	enL=0.01;
+            	enH=0.05;
             	break;
             	
             case "quietstreet":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.4;
+            	msH=0.45;
+            	zcL=0.01;
+            	zcH=0.05;
+            	enL=0.05;
+            	enH=0.1;
             	break;
             	
             case "restaurant":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.4;
+            	msH=0.45;
+            	zcL=0.05;
+            	zcH=0.1;
+            	enL=0.01;
+            	enH=0.05;
             	break;
             	
             case "supermarket":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.45;
+            	msH=0.5;
+            	zcL=0.01;
+            	zcH=0.05;
+            	enL=0.05;
+            	enH=0.1;
             	break;
             	
             case "tube":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.35;
+            	msH=0.4;
+            	zcL=0.01;
+            	zcH=0.1;
+            	enL=0.01;
+            	enH=0.1;
             	break;
             	
             case "tubestation":
-            	msL=0;
-            	msH=0;
-            	zcL=0;
-            	zcH=0;
-            	enL=0;
-            	enH=0;
-            	mfcL=0;
-            	mfcH=0;
+            	msL=0.4;
+            	msH=0.45;
+            	zcL=0.01;
+            	zcH=0.1;
+            	enL=0.01;
+            	enH=0.1;
             	break;
             	
             default:
@@ -783,62 +765,61 @@ public class SearchDemo {
             	break;
             }
         	
-        	for(double msW = msL; msW < msH; msW += 0.01){
-        		for(double zcW = zcL; zcW < zcH; zcW += 0.01){
-        			for(double enW = enL; enW < enH; enW += 0.01){
-        				for(double mfcW = mfcL; mfcW < mfcH; mfcW += 0.01){
-        					double originV = 0;		
-				        	for (Map.Entry f2: msTrainFeatureList.entrySet()){		
-				    			msV = cosine.getDistance(msQueryFeatureList.get(query), (double[]) f2.getValue());
-				    			if(outputList.containsKey((String)f2.getKey())){
-			        				originV = outputList.get((String)f2.getKey());
-			        				outputList.put((String)f2.getKey(), (originV + msV * msW));
-			        			}else
-			        				outputList.put((String)f2.getKey(), msV * msW);
-				        	}
-				        	for (Map.Entry f2: zcTrainFeatureList.entrySet()){
-				    			zcV = ed.getDistance(zcQueryFeatureList.get(query), (double[]) f2.getValue());
-				    			if(outputList.containsKey((String)f2.getKey())){
-			        				originV = outputList.get((String)f2.getKey());
-			        				outputList.put((String)f2.getKey(), (originV + zcV * zcW));
-			        			}else
-			        				outputList.put((String)f2.getKey(), zcV * zcW);
-				        	}
-				        	for (Map.Entry f2: enTrainFeatureList.entrySet()){
-				    			enV = ed.getDistance(enQueryFeatureList.get(query), (double[]) f2.getValue());
-				    			if(outputList.containsKey((String)f2.getKey())){
-			        				originV = outputList.get((String)f2.getKey());
-			        				outputList.put((String)f2.getKey(), (originV + enV * enW));
-			        			}else
-			        				outputList.put((String)f2.getKey(), enV * enW);
-				        	}
-				        	for (Map.Entry f2: mfcTrainFeatureList.entrySet()){
-				    			mfcV = ed.getDistance(mfcQueryFeatureList.get(query), (double[]) f2.getValue());
-				    			if(outputList.containsKey((String)f2.getKey())){
-			        				originV = outputList.get((String)f2.getKey());
-			        				outputList.put((String)f2.getKey(), (originV + mfcV * mfcW));
-			        			}else
-			        				outputList.put((String)f2.getKey(), mfcV * mfcW);
-				        	}
-				        	
-				        	
-				        	SortHashMapByValue sortHM = new SortHashMapByValue(20);
-				            ArrayList<String> msResult = sortHM.sort(outputList);
-				            
-				            double precisionV = pre.getPrecision(query, msResult);
-				            
-				            HashMap<String, Double> sortedResult = new HashMap<String, Double>();
-				            
-				            String resultLine = query + "\n\tmsW:" + String.valueOf(msW) + 
-				            		"\tzcW:" + String.valueOf(zcW) + "\tenW:" + String.valueOf(enV) + "\tmfcW:" + String.valueOf(mfcV) +
-				            		"\n\t Precision:" + String.valueOf(precisionV) + "\n";
-				            
-				//            for(int i=0; i<msResult.size(); i++){
-				//            	msLine += msResult.get(i) + "\t";
-				//            }
-				            outputList.clear();   
-				            fw.append(resultLine);
-				        }
+        	for(double msW = msL; msW <= msH; msW += 0.01){
+        		for(double zcW = zcL; zcW <= zcH; zcW += 0.01){
+        			for(double enW = enL; enW <= enH; enW += 0.01){
+        				double mfcW = 1.0-msW-zcW-enW;
+        				double originV = 0;		
+				        for (Map.Entry f2: msTrainFeatureList.entrySet()){		
+				    		msV = cosine.getDistance(msQueryFeatureList.get(query), (double[]) f2.getValue());
+				    		if(outputList.containsKey((String)f2.getKey())){
+			       				originV = outputList.get((String)f2.getKey());
+			       				outputList.put((String)f2.getKey(), (originV + msV * msW));
+			       			}else
+			       				outputList.put((String)f2.getKey(), msV * msW);
+			        	}
+			        	for (Map.Entry f2: zcTrainFeatureList.entrySet()){
+			    			zcV = ed.getDistance(zcQueryFeatureList.get(query), (double[]) f2.getValue());
+			    			if(outputList.containsKey((String)f2.getKey())){
+		        				originV = outputList.get((String)f2.getKey());
+		        				outputList.put((String)f2.getKey(), (originV + zcV * zcW));
+		        			}else
+		        				outputList.put((String)f2.getKey(), zcV * zcW);
+			        	}
+			        	for (Map.Entry f2: enTrainFeatureList.entrySet()){
+			    			enV = ed.getDistance(enQueryFeatureList.get(query), (double[]) f2.getValue());
+			    			if(outputList.containsKey((String)f2.getKey())){
+		        				originV = outputList.get((String)f2.getKey());
+		        				outputList.put((String)f2.getKey(), (originV + enV * enW));
+		        			}else
+		        				outputList.put((String)f2.getKey(), enV * enW);
+			        	}
+			        	for (Map.Entry f2: mfcTrainFeatureList.entrySet()){
+			    			mfcV = ed.getDistance(mfcQueryFeatureList.get(query), (double[]) f2.getValue());
+			    			if(outputList.containsKey((String)f2.getKey())){
+		        				originV = outputList.get((String)f2.getKey());
+		        				outputList.put((String)f2.getKey(), (originV + mfcV * mfcW));
+		        			}else
+		        				outputList.put((String)f2.getKey(), mfcV * mfcW);
+			        	}
+			        	
+			        	
+			        	SortHashMapByValue sortHM = new SortHashMapByValue(20);
+			            ArrayList<String> msResult = sortHM.sort(outputList);
+			            
+			            double precisionV = pre.getPrecision(query, msResult);
+			            
+			            HashMap<String, Double> sortedResult = new HashMap<String, Double>();
+			            
+			            String resultLine = query + "\n\tmsW:" + String.valueOf(msW) + 
+			            		"\tzcW:" + String.valueOf(zcW) + "\tenW:" + String.valueOf(enV) + "\tmfcW:" + String.valueOf(mfcV) +
+			            		"\n\t Precision:" + String.valueOf(precisionV) + "\n";
+			            
+			//            for(int i=0; i<msResult.size(); i++){
+			//            	msLine += msResult.get(i) + "\t";
+			//            }
+			            outputList.clear();   
+			            fw.append(resultLine);			        
         			}
         		}
         	}
@@ -855,5 +836,6 @@ public class SearchDemo {
     	
     	//HashMap<String,double[]> feature = trainFeatureList();
     	//testRun();
+    	testWeight();
     }
 }
