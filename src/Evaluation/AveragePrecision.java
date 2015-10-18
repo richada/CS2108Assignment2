@@ -15,7 +15,10 @@ public class AveragePrecision {
 	    	double average = 0.0;
 	    	
 	    	for (int i = 0; i < k; i ++){
-	    		ArrayList<String> cutoffk = (ArrayList<String>) resultnames.subList(0, i + 1);
+	    		ArrayList<String> cutoffk = new ArrayList<String>();
+	    		for(int j=0; j<i+1; j++){
+	    			cutoffk.add(resultnames.get(j));
+	    		}
 	    		double pk = precision.getPrecision(queryfile,cutoffk);
 	    		double rk = 0;
 	    		String category1 = resultnames.get(i).replace(".wav", "").replaceAll("[^a-zA-Z]","");

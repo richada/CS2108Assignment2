@@ -4,9 +4,14 @@ import Search.SearchDemo;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+
+import ExtraFeature.IdentifyProtocolV1;
+import ExtraFeature.JavaSoundRecorder;
+import ExtraFeature.PseudoRF;
 
 /**
  * Created by workshop on 9/18/2015.
@@ -15,9 +20,10 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
 
     JPanel contentPane;
     JPanel checkBoxPanel = new JPanel(new GridLayout(0,2));
-    JButton openButton, searchButton, queryButton;
+    JButton openButton, searchButton, queryButton, recordButton, songButton, rfButton;
     JFileChooser fileChooser;
     JCheckBox MSButton, ZCButton, ENButton, MFCButton;
+    JLabel songNameLabel;
 
 
     File queryAudio = null;
@@ -41,18 +47,33 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         // Pre-load all the sound files
         queryAudio = null;
         SoundEffect.volume = SoundEffect.Volume.LOW;  // un-mute
-
+        int x=150,y=30;
+        
         // Set up UI components;
         openButton = new JButton("Select an audio clip...");
+        //openButton.setPreferredSize(new Dimension(x,y));
         openButton.addActionListener(this);
 
         String tempName = "";
-
+        
+        recordButton = new JButton("Record a 10s clip...");
+        recordButton.setPreferredSize(new Dimension(x,y));
+        recordButton.addActionListener(this);
+        
+        songButton = new JButton("Music Recognition");
+        //songButton.setPreferredSize(new Dimension(x,y));
+        songButton.addActionListener(this);
+        
         queryButton = new JButton("Current Audio:"+tempName);
+        //queryButton.setPreferredSize(new Dimension(x,y));
         queryButton.addActionListener(this);
 
         searchButton = new JButton("Search");
+        //searchButton.setPreferredSize(new Dimension(x,y));
         searchButton.addActionListener(this);
+        
+        rfButton = new JButton("Reference Feedback");
+        rfButton.addActionListener(this);
         
         MSButton = new JCheckBox("Magnitude Spectrum Match");
         MSButton.addActionListener(this);
@@ -65,23 +86,34 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         
         MFCButton = new JCheckBox("MFCC Match");
         MFCButton.addActionListener(this);
-
-        checkBoxPanel.add(MSButton);
-
-        checkBoxPanel.add(ZCButton);
-
-        checkBoxPanel.add(ENButton);
-
-        checkBoxPanel.add(MFCButton);
+          
+        songNameLabel = new JLabel();
+        songNameLabel.setVisible(false);
         
         JPanel queryPanel = new JPanel();
+        JPanel extraFeaturePanel = new JPanel();
+        JPanel featurePanel = new JPanel(new GridLayout(0,1));
+        JPanel panelWithName = new JPanel(new GridLayout(1,0));
+        
         queryPanel.add(openButton);
         queryPanel.add(queryButton);
         queryPanel.add(searchButton);
+        extraFeaturePanel.add(recordButton);
+        extraFeaturePanel.add(songButton);
+        extraFeaturePanel.add(rfButton);
+        extraFeaturePanel.add(songNameLabel);
+        featurePanel.add(queryPanel);
+        featurePanel.add(extraFeaturePanel);
+        checkBoxPanel.add(MSButton);
+        checkBoxPanel.add(ZCButton);
+        checkBoxPanel.add(ENButton);
+        checkBoxPanel.add(MFCButton);
+//        panelWithName.add(checkBoxPanel);
+//        panelWithName.add(songNameLabel);
         
 
         JPanel resultPanel = new JPanel();
-        resultPanel.setLayout(new GridLayout(0, 4, 60, 60));
+        resultPanel.setLayout(new GridLayout(0, 4, 30, 30));
 
         for (int i = 0; i < resultLabels.length; i ++){
             resultLabels[i] = new JLabel();
@@ -102,7 +134,7 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         setSize(800,900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        contentPane.add(queryPanel, BorderLayout.PAGE_START);
+        contentPane.add(featurePanel, BorderLayout.PAGE_START);
         contentPane.add(checkBoxPanel,BorderLayout.PAGE_END);
         contentPane.add(resultPanel, BorderLayout.CENTER);
 
@@ -161,7 +193,62 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
 
         }else if (e.getSource() == queryButton){
             new SoundEffect(queryAudio.getAbsolutePath()).play();
-        }else {
+            
+        }else if (e.getSource() == songButton){
+        	try {
+				String songName = IdentifyProtocolV1.getSong();
+				songNameLabel.setText("Title: "+songName);
+				songNameLabel.setVisible(true);
+				//System.out.println(songName);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            
+        }else if (e.getSource() == recordButton){
+            try {
+				String recordFile = JavaSoundRecorder.record();
+				queryAudio = new File(recordFile);
+				queryButton.setText(queryAudio.getName());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        }else if (e.getSource() == rfButton){
+        	SearchDemo searchDemo = new SearchDemo();
+            String queryName = queryAudio.getName();
+            String checkBit = "";
+            String msC="0",zcC="0",enC="0",mfcC="0";
+            if(MSButton.isSelected()){
+            	msC = "1";
+            }
+            
+            if(ZCButton.isSelected()){
+				zcC = "1";       	
+			}
+			
+			if(ENButton.isSelected()){
+				enC = "1";
+			}
+			
+			if(MFCButton.isSelected()){
+				mfcC = "1";
+			}
+			checkBit = msC + zcC + enC + mfcC;
+			
+            PseudoRF rf = new PseudoRF();
+            ArrayList<String> rfQueries = rf.getRFqueries(queryName, resultFiles);
+            ArrayList<Double> weightList = rf.getWeightList(rfQueries.size());
+            resultFiles = searchDemo.giveRF(rfQueries,weightList,checkBit);
+            
+            for (int i = 0; i < resultFiles.size(); i ++){
+                resultLabels[i].setText(resultFiles.get(i));
+                resultButton[i].setText(resultFiles.get(i));
+                resultButton[i].setVisible(true);
+            }
+            
+        }
+        else {
             for (int i = 0; i < resultSize; i ++){
                 if (e.getSource() == resultButton[i]){
                     String filePath = basePath+resultFiles.get(i);

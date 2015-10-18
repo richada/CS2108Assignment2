@@ -1,3 +1,5 @@
+package ExtraFeature;
+
 import javax.sound.sampled.*;
 
 import java.io.*;
@@ -9,7 +11,7 @@ import java.io.*;
 public class JavaSoundRecorder {
     // record duration, in milliseconds
     static final long RECORD_TIME = 12000;  // 10 s
-    static final String projectFolder = "C:\\Users\\zhang_000\\Desktop\\CS2108\\Assignment2\\";
+    static final String projectFolder = "C:\\Users\\rithel\\Desktop\\CS2108\\Assignment2\\";
  
     boolean dir = new File(projectFolder + "data\\input\\temp").mkdir();
     // path of the wav file
@@ -30,7 +32,7 @@ public class JavaSoundRecorder {
         int sampleSizeInBits = 16;
         int channels = 1;
         boolean signed = true;
-        boolean bigEndian = true;
+        boolean bigEndian = false;
         AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
                                              channels, signed, bigEndian);
         return format;
@@ -104,7 +106,7 @@ public class JavaSoundRecorder {
      * Entry to run the program
      * @throws IOException 
      */
-    public static void main(String[] args) throws IOException {
+    public static String record() throws IOException {
         final JavaSoundRecorder recorder = new JavaSoundRecorder();
  
         // creates a new thread that waits for a specified
@@ -125,9 +127,9 @@ public class JavaSoundRecorder {
         // start recording
         recorder.start();
         // copy 10s to new file
-        String newfilename = projectFolder + "data\\input\\recorded.wav";
-        copyAudio(tempfilename,newfilename,0,10);
+        String newFileName = projectFolder + "data\\input\\recorded.wav";
+        copyAudio(tempfilename,newFileName,0,10);
         
-        
+        return newFileName;
     }
 }

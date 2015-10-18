@@ -7,6 +7,7 @@ import Feature.ZeroCrossing;
 
 import Evaluation.Precision;
 import Evaluation.Recall;
+import Evaluation.AveragePrecision;
 
 import SignalProcess.WaveIO;
 import Distance.Cosine;
@@ -156,7 +157,6 @@ public class SearchDemo {
         System.out.println(query);
         
         String queryCategory = query.substring(query.lastIndexOf("\\")+1).split(".wav")[0].replaceAll("[^a-zA-Z]","");
-        System.out.println(queryCategory);
         
         switch(queryCategory){
         case "bus":
@@ -234,7 +234,7 @@ public class SearchDemo {
         	break;
         }
         	
-        System.out.println(msW + " " + zcW + " " + enW + " " + mfcW + "\n");
+        System.out.println("MS Weight: " + msW + "\nZC Weight: " + zcW + "\nEN Weight: " + enW + "\nMFCC Weight: " + mfcW + "\n");
         
         if(checkBit.charAt(0) == '1')
         	msFeatureQ = ms.getFeature(inputSignal);
@@ -318,27 +318,217 @@ public class SearchDemo {
 
         SortHashMapByValue sortHM = new SortHashMapByValue(20);
         ArrayList<String> result = sortHM.sort(simList);
-
-        String out = query + ":";
-        for(int j = 0; j < result.size(); j++){
-            out += "\n\t" + result.get(j);
-        }
-        
         
         //Evaluation Part
         Precision pre = new Precision();
         Recall rec = new Recall();
+        AveragePrecision ap = new AveragePrecision();
+        
         String queryName = query.substring(query.lastIndexOf("\\")+1);
-        System.out.println(queryName);
         double recallV = rec.getRecall(queryName, result);
         double precisionV = pre.getPrecision(queryName, result);
+        double averagePrecisionV = ap.getAveragePrecision(queryName, result);
         double F1Score = (2 * precisionV * recallV) /(precisionV + recallV);
        
-        System.out.println(out);
-        System.out.println("Recall: "+recallV+"\n"+"Precision: "+precisionV+"\n"+"F1 Score: "+F1Score);
+        System.out.println("Recall: "+recallV+"\nPrecision: "+precisionV+"\nAverage Precision: "+averagePrecisionV+"\nF1 Score: "+F1Score+"\n");
         return result;
     }
+    
+    
+    public ArrayList<String> giveRF(ArrayList<String> rfQueries, ArrayList<Double> weightList, String checkBit){
+    	String inputPath1 = "data/input/query/";
+    	String inputPath = "data/input/train/";
+    	HashMap<String,Double> simList = new HashMap<String,Double>();
+    	
+        MagnitudeSpectrum ms = new MagnitudeSpectrum();
+        Energy en = new Energy();
+        MFCC mfc = new MFCC();
+        ZeroCrossing zc = new ZeroCrossing();
+        double msW=0.452,zcW=0.077,enW=0.067,mfcW=0.404;
+        
+        String msFeature = "data/feature/msFeature.txt";
+        String zcFeature = "data/feature/zcFeature.txt";
+        String enFeature = "data/feature/enFeature.txt";
+        String mfcFeature = "data/feature/mfcFeature.txt";
+        
+		
+        HashMap<String, double[]> msTrainFeatureList = readFeature(msFeature);
+        HashMap<String, double[]> zcTrainFeatureList = readFeature(zcFeature);
+        HashMap<String, double[]> enTrainFeatureList = readFeature(enFeature);
+        HashMap<String, double[]> mfcTrainFeatureList = readFeature(mfcFeature);
+        
+        Cosine cosine = new Cosine();
+        CityBlock cb = new CityBlock();
+        Euclidean ed = new Euclidean();
+        
+        String queryCategory = rfQueries.get(0).split(".wav")[0].replaceAll("[^a-zA-Z]","");
+        
+        switch(queryCategory){
+        case "bus":
+        	msW = 0.7;
+        	zcW = 0.1;
+        	enW = 0;
+        	mfcW = 0.2;
+        	break;
+        	
+        case "busystreet":
+        	msW = 0.35;
+        	zcW = 0.1;
+        	enW = 0.2;
+        	mfcW = 0.35;
+        	break;
+        	
+        case "office":
+        	msW = 0.4;
+        	zcW = 0.07;
+        	enW = 0.08;
+        	mfcW = 0.45;
+        	break;
+        	
+        case "openairmarket":
+        	msW = 0.5;
+        	zcW = 0.08;
+        	enW = 0.02;
+        	mfcW = 0.4;
+        	break;
+        	
+        case "park":
+        	msW = 0.45;
+        	zcW = 0.07;
+        	enW = 0.03;
+        	mfcW = 0.45;
+        	break;
+        	
+        case "quietstreet":
+        	msW = 0.43;
+        	zcW = 0;
+        	enW = 0.1;
+        	mfcW = 0.47;
+        	break;
+        	
+        case "restaurant":
+        	msW = 0.45;
+        	zcW = 0.1;
+        	enW = 0;
+        	mfcW = 0.45;
+        	break;
+        	
+        case "supermarket":
+        	msW = 0.45;
+        	zcW = 0.05;
+        	enW = 0.1;
+        	mfcW = 0.4;
+        	break;
+        	
+        case "tube":
+        	msW = 0.3;
+        	zcW = 0.05;
+        	enW = 0.05;
+        	mfcW = 0.6;
+        	break;
+        	
+        case "tubestation":
+        	msW = 0.13;
+        	zcW = 0.12;
+        	enW = 0.05;
+        	mfcW = 0.7;
+        	break;
+        	
+        default:
+        	System.out.println("No Such Case!\n");
+        	break;
+        }
+             
+    	for(int i=0; i<rfQueries.size(); i++){
+    		String fileName = "";
+    		if(i==0)
+    			fileName = inputPath1 + rfQueries.get(i);
+    		else
+    			fileName = inputPath + rfQueries.get(i);
+    		WaveIO waveIO = new WaveIO();
+            short[] inputSignal = waveIO.readWave(fileName);
+            double[] msFeatureQ = null,zcFeatureQ=null,enFeatureQ=null,mfcFeatureQ=null;
+            if(checkBit.charAt(0) == '1')
+            	msFeatureQ = ms.getFeature(inputSignal);
+            if(checkBit.charAt(1) == '1')
+            	zcFeatureQ = zc.getFeature(inputSignal);
+            if(checkBit.charAt(2) == '1')
+            	enFeatureQ = en.getFeature(inputSignal);
+            if(checkBit.charAt(3) == '1'){
+            	double[][] mfcFeatureQ1 = mfc.process(inputSignal);
+            	mfcFeatureQ = mfc.getMeanFeature();
+            }
 
+            double msV=0,zcV=0,enV=0,mfcV=0;
+        	double originV=0,finalV=0;
+        	
+//            CheckBit 1: MS
+//        	  CheckBit 2: ZC
+//        	  CheckBit 3: EN
+//        	  CheckBit 4: MFCC
+
+           	if(checkBit.charAt(0) == '1'){
+           		for (Map.Entry f: msTrainFeatureList.entrySet()){
+           			msV = cosine.getDistance(msFeatureQ, (double[]) f.getValue());
+           			if(simList.containsKey((String)f.getKey())){
+           				originV = simList.get((String)f.getKey());
+           				simList.put((String)f.getKey(), (originV + msV * msW * weightList.get(i)));
+           			}else
+           				simList.put((String)f.getKey(), msV * msW * weightList.get(i));
+           		}
+           	}
+           	
+            if(checkBit.charAt(1) == '1'){
+               	for (Map.Entry f: zcTrainFeatureList.entrySet()){
+           			zcV = ed.getDistance(zcFeatureQ, (double[]) f.getValue());
+           			if(simList.containsKey((String)f.getKey())){
+           				originV = simList.get((String)f.getKey());
+           				simList.put((String)f.getKey(), (originV + zcV * zcW * weightList.get(i)));
+           			}else
+           				simList.put((String)f.getKey(), zcV * zcW * weightList.get(i));
+           		}
+            }
+                
+            if(checkBit.charAt(2) == '1'){
+               	for (Map.Entry f: enTrainFeatureList.entrySet()){
+           			enV = ed.getDistance(enFeatureQ, (double[]) f.getValue());
+           			if(simList.containsKey((String)f.getKey())){
+           				originV = simList.get((String)f.getKey());
+           				simList.put((String)f.getKey(), (originV + enV * enW * weightList.get(i)));
+           			}else
+           				simList.put((String)f.getKey(), enV * enW * weightList.get(i));
+           		}
+            }
+                
+            if(checkBit.charAt(3) == '1'){
+               	for (Map.Entry f: mfcTrainFeatureList.entrySet()){
+           			mfcV = cosine.getDistance(mfcFeatureQ, (double[]) f.getValue());
+           			if(simList.containsKey((String)f.getKey())){
+           				originV = simList.get((String)f.getKey());
+           				simList.put((String)f.getKey(), (originV + mfcV * mfcW * weightList.get(i)));
+           			}else
+           				simList.put((String)f.getKey(), mfcV * mfcW * weightList.get(i));
+           		}
+            }
+            
+    	}
+    	
+    	SortHashMapByValue sortHM = new SortHashMapByValue(20);
+        ArrayList<String> result = sortHM.sort(simList);
+        
+        Precision pre = new Precision();
+        Recall rec = new Recall();
+        AveragePrecision ap = new AveragePrecision();
+        
+        String queryName = rfQueries.get(0);
+        double recallV = rec.getRecall(queryName, result);
+        double precisionV = pre.getPrecision(queryName, result);
+        double averagePrecisionV = ap.getAveragePrecision(queryName, result);
+        double F1Score = (2 * precisionV * recallV) /(precisionV + recallV);
+
+        System.out.println("After RF:\nRecall: "+recallV+"\nPrecision: "+precisionV+"\nAverage Precision: "+averagePrecisionV+"\nF1 Score: "+F1Score+"\n");
+    	return result;
+    }
     /**
      * Load the offline file of features (the result of function 'trainFeatureList()');
      * @param featurePath the path of offline file including the features of training set.
@@ -373,6 +563,7 @@ public class SearchDemo {
         return fList;
     }
 
+    
     public static void testRun() throws IOException{
     	String msFeature = "data/feature/msFeature.txt";
         String zcFeature = "data/feature/zcFeature.txt";
