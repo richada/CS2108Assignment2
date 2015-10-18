@@ -428,9 +428,9 @@ public class SearchDemo {
         	break;
         	
         case "tubestation":
-        	msW = 0.13;
-        	zcW = 0.12;
-        	enW = 0.05;
+        	msW = 0.1;
+        	zcW = 0.1;
+        	enW = 0.1;
         	mfcW = 0.7;
         	break;
         	
