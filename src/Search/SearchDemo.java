@@ -155,77 +155,78 @@ public class SearchDemo {
         String mfcFeature = "data/feature/mfcFeature.txt";
         System.out.println(query);
         
-        String queryCategory = query.substring(query.lastIndexOf("/")+1).split(".")[0].replaceAll("[^a-zA-Z]","");
+        String queryCategory = query.substring(query.lastIndexOf("\\")+1).split(".wav")[0].replaceAll("[^a-zA-Z]","");
+        System.out.println(queryCategory);
         
         switch(queryCategory){
         case "bus":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.7;
+        	zcW = 0.1;
+        	enW = 0;
+        	mfcW = 0.2;
         	break;
         	
         case "busystreet":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.35;
+        	zcW = 0.1;
+        	enW = 0.2;
+        	mfcW = 0.35;
         	break;
         	
         case "office":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.4;
+        	zcW = 0.07;
+        	enW = 0.08;
+        	mfcW = 0.45;
         	break;
         	
         case "openairmarket":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.5;
+        	zcW = 0.08;
+        	enW = 0.02;
+        	mfcW = 0.4;
         	break;
         	
         case "park":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.45;
+        	zcW = 0.07;
+        	enW = 0.03;
+        	mfcW = 0.45;
         	break;
         	
         case "quietstreet":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.43;
+        	zcW = 0;
+        	enW = 0.1;
+        	mfcW = 0.47;
         	break;
         	
         case "restaurant":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.45;
+        	zcW = 0.1;
+        	enW = 0;
+        	mfcW = 0.45;
         	break;
         	
         case "supermarket":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.45;
+        	zcW = 0.05;
+        	enW = 0.1;
+        	mfcW = 0.4;
         	break;
         	
         case "tube":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.3;
+        	zcW = 0.05;
+        	enW = 0.05;
+        	mfcW = 0.6;
         	break;
         	
         case "tubestation":
-        	msW = 1;
-        	zcW = 1;
-        	enW = 1;
-        	mfcW = 1;
+        	msW = 0.13;
+        	zcW = 0.12;
+        	enW = 0.05;
+        	mfcW = 0.7;
         	break;
         	
         default:
@@ -233,7 +234,7 @@ public class SearchDemo {
         	break;
         }
         	
-        	
+        System.out.println(msW + " " + zcW + " " + enW + " " + mfcW + "\n");
         
         if(checkBit.charAt(0) == '1')
         	msFeatureQ = ms.getFeature(inputSignal);
@@ -305,7 +306,7 @@ public class SearchDemo {
             
             if(checkBit.charAt(3) == '1'){
             	for (Map.Entry f: mfcTrainFeatureList.entrySet()){
-        			mfcV = ed.getDistance(mfcFeatureQ, (double[]) f.getValue());
+        			mfcV = cosine.getDistance(mfcFeatureQ, (double[]) f.getValue());
         			if(simList.containsKey((String)f.getKey())){
         				originV = simList.get((String)f.getKey());
         				simList.put((String)f.getKey(), (originV + mfcV * mfcW));
@@ -320,7 +321,7 @@ public class SearchDemo {
 
         String out = query + ":";
         for(int j = 0; j < result.size(); j++){
-            out += "\t" + result.get(j);
+            out += "\n\t" + result.get(j);
         }
         
         
@@ -608,7 +609,7 @@ public class SearchDemo {
         msbr.close();
         mssfw.close();
         msfr.close();
-        
+                                                                                                                         
         zcbr.close();
         zcsfw.close();
         zcfr.close();
@@ -809,7 +810,9 @@ public class SearchDemo {
 			            
 			            double precisionV = pre.getPrecision(query, msResult);
 			            
-			            HashMap<String, Double> sortedResult = new HashMap<String, Double>();
+			            
+			            if(precisionV < 0.8)
+			            	continue;
 			            
 			            String resultLine = query + "\n\tmsW:" + String.valueOf(msW) + 
 			            		"\tzcW:" + String.valueOf(zcW) + "\tenW:" + String.valueOf(enV) + "\tmfcW:" + String.valueOf(mfcV) +
@@ -825,7 +828,7 @@ public class SearchDemo {
         	}
         }
         fw.close();
-    }
+    }                                                                                       
     
     public static void main(String[] args) throws IOException{
         //SearchDemo searchDemo = new SearchDemo();
@@ -836,6 +839,6 @@ public class SearchDemo {
     	
     	//HashMap<String,double[]> feature = trainFeatureList();
     	//testRun();
-    	testWeight();
+    	//testWeight();
     }
 }
