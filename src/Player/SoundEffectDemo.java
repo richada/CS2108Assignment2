@@ -72,7 +72,7 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         //searchButton.setPreferredSize(new Dimension(x,y));
         searchButton.addActionListener(this);
         
-        rfButton = new JButton("Reference Feedback");
+        rfButton = new JButton("Relevance Feedback");
         rfButton.addActionListener(this);
         
         MSButton = new JCheckBox("Magnitude Spectrum Match");
