@@ -445,6 +445,7 @@ public class SearchDemo {
     			fileName = inputPath1 + rfQueries.get(i);
     		else
     			fileName = inputPath + rfQueries.get(i);
+    		
     		WaveIO waveIO = new WaveIO();
             short[] inputSignal = waveIO.readWave(fileName);
             double[] msFeatureQ = null,zcFeatureQ=null,enFeatureQ=null,mfcFeatureQ=null;

@@ -28,18 +28,15 @@ public class AveragePrecision {
 	    		average += pk * rk;
 	    	}
 	    	int relevantCount = 0;
-	    	File folder = new File("data/input/train");
-	    	File[] listOfFiles = folder.listFiles();
-
-	    	for (int i = 0; i < listOfFiles.length; i++) {
-	    		if ((listOfFiles[i].isFile())) {
-	    			String filename = listOfFiles[i].getName();
-	    			String category1 = filename.replace(".wav", "").replaceAll("[^a-zA-Z]","");
-	    			if (category.equals(category1)){
-	    				relevantCount ++;
-	    				}
-	    			}
+	    	
+	    	for (int i = 0; i < resultnames.size(); i++) {
+	    		String filename = resultnames.get(i);
+	    		String category1 = filename.replace(".wav", "").replaceAll("[^a-zA-Z]","");
+	    		if (category.equals(category1)){
+	    			relevantCount ++;
 	    		}
+	   		}
+
 	    	average = average/(double)relevantCount;
 	    	return average;
 	    }

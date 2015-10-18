@@ -20,7 +20,7 @@ public class Precision {
     			count ++;
     		}
     	}
-    	return count/(double)k;
+    	return count/(double)resultnames.size();
     }
     
 }
